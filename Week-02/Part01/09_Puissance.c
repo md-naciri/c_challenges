@@ -2,17 +2,16 @@
 #include<stdlib.h>
 
 int main () {
-    int b,e,i,p,a;
+    int X,e,i,a;
     printf("Entrer la base et l'exposant: "); 
-    scanf("%d %d",&b, &e);
+    scanf("%d %d",&X, &e);
     i=1;
-    a=b;
+    a=X;
     while (i<e)
         {
-            p=b*a;
+            X=X*a;
             i++;
-            b=p;
         }
-    printf("\n%d",p);
+    printf("\n%d",X);
     return 0;
 }
