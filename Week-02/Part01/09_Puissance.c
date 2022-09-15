@@ -2,7 +2,8 @@
 #include<stdlib.h>
 
 int main () {
-    int X,e,i,a;
+    int e,i,a;
+    long long int X;
     printf("Entrer la base et l'exposant: "); 
     scanf("%d %d",&X, &e);
     i=1;
@@ -12,6 +13,6 @@ int main () {
             X=X*a;
             i++;
         }
-    printf("\n%d",X);
+    printf("\n%lld",X);
     return 0;
 }
