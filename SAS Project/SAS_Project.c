@@ -1,8 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include <unistd.h>
+#include<unistd.h>
 #include<conio.h>
-#include <ctype.h>
+#include<ctype.h>
+#include<string.h>
 #include<time.h>
 
 void make_toupper(char s[])
@@ -30,8 +31,7 @@ White \033[0;37m
 
 void Replenish();
 
-//The product Structure
-typedef struct ProductID
+typedef struct ProductID //The product Structure
 {
     char code[20];
     char name[20];
@@ -39,30 +39,43 @@ typedef struct ProductID
     float price;
 }Product;
 
-typedef struct Save
+typedef struct Save //The statistics structure
 {
     char name[20];
     char code[20];
     int quan;
-    float UTTCprice;
     float TTTCprice;
+    float UTTCprice;
     char date[50];
 }Save;
 
-
+Product pro[200]; 
 Save S[200];
-Product pro[200];
-int i=0;
-int s=0;
+char B; //B for back
+char Y; //To do sth again
+int i=0; //a counter for pro[]
+int s=0; //a counter for S[]
+float snb=0;// Total number of items sold
+int op; //op for option
 int j;
 
-
+//Return to the main menu
+void return_menu(){
+    printf("\n\tEnter a capital B to return to the main menu\t\t");
+    scanf("%s",&B);
+    while(B != 'B'){
+        printf("\033[0;33m"); //Yellow Color
+  		printf("\tPlease enter a capital B to return to the main menu:\t");
+  		scanf("%s",&B);
+	}
+    system("cls");
+    printf("\033[0;37m"); //White color
+    main();
+}
 
 //Adding a new product Function:
 void Add(){
-    char B;
     char codeCompare[20];
-    int op; //op for option.
     printf("\033[1;36m"); //Cyan Color
     printf("\n\t||-----------------------|| Adding a new product ||-----------------------||\n\n");
     sleep(1);
@@ -70,9 +83,6 @@ void Add(){
     printf("\n\tPlease Enter your product code:\t");
     scanf("%s",codeCompare);
     make_toupper(codeCompare);
-
-
-
     for (j=0;j<i;j++){
         if (strcmp(pro[j].code,codeCompare)==0){
             NO2:
@@ -84,7 +94,6 @@ void Add(){
         }
     }
     strcpy(pro[i].code,codeCompare);
-
   	printf("\tPlease Enter your product name:\t");
   	scanf("%s",pro[i].name);
     make_toupper(pro[i].name);
@@ -92,28 +101,14 @@ void Add(){
   	scanf("%d",&pro[i].quantity);
   	printf("\tPlease Enter the price:\t");
   	scanf("%f",&pro[i].price);
-    printf("\tEnter a capital B to return to the main menu\t\t");
-    scanf("%s",&B);
     i++;
-    while(B != 'B'){
-        printf("\033[0;33m"); //Yellow Color
-  		printf("\tPlease enter a capital B to return to the main menu:\t");
-  		scanf("%s",&B);
-	}
-    system("cls");
-    printf("\033[0;37m"); //White color
-    main();
+    return_menu();
 }
-
-
 
 //Adding several products Function:
 void AddSev(){
-    int n;
-    int count =1;
-    char B; //B for back
+    int n, count =1;
     char codeCompare[20];
-    int op; //op for option.
     printf("\033[1;36m"); //Cyan Color
     printf("\n\t||-----------------------------|| Adding several products ||-----------------------------||\n\n");
     sleep(1);
@@ -121,17 +116,14 @@ void AddSev(){
   	scanf("%d",&n);
     n=n+i;
     for(i; i<n; i++){
-        
         NO1:
         printf("\n\tPlease Enter your product N%d code:\t",count);
   	    scanf("%s",codeCompare);
         make_toupper(codeCompare);
-        
-
         for (j=0;j<i;j++){
             if (strcmp(pro[j].code,codeCompare)==0){
                 NO2:
-                printf("\n\tThis product already exists, you can add more quantity of this product by typing 1, \n\tor 0 to add another new product :\t");
+                printf("\n\tThis product already exists, you can add more items of this product by typing 1, \n\tor 0 to add another new product :\t");
                 scanf("%d",&op);
                 if (op==1) Replenish();
                 else if (op==0) goto NO1;
@@ -139,8 +131,6 @@ void AddSev(){
          }
         }
         strcpy(pro[i].code,codeCompare);
-    
-
         printf("\tPlease Enter your product N%d name:\t",count);
         scanf("%s",pro[i].name);
         make_toupper(pro[i].name);
@@ -151,27 +141,13 @@ void AddSev(){
         printf("\n");
         count++;
     }
-    printf("\tEnter a capital B to return to the main menu\t\t");
-    scanf("%s",&B);
-    while(B != 'B'){
-        printf("\033[0;33m"); //Yellow Color
-  	    printf("\tPlease enter a capital B to return to the main menu:\t");
-  		scanf("%s",&B);
-	}
-    system("cls");
-    printf("\033[0;37m"); //White color
-    main();
+    return_menu();
 }
-
-
 
 //Listing products Function:
 void List(){
-    int op; //op for option.
-    char B; //B for back
     int k; //We need it for the sort
     struct ProductID temp;
-    
     printf("\033[1;36m"); //Cyan Color
     printf("\n\t||-----------------------------|| Listing products ||-----------------------------||\n\n");
     sleep(1);
@@ -183,9 +159,9 @@ void List(){
     usleep(30000);
     printf("\n\t\t-> Choose an option:\t\t");
     scanf("%d",&op);
-    printf("\n\n");
+    printf("\n\n\tBefore");
     for (j=0;j<i;j++){
-        printf("Name: %s\t\t\tPrice: %.2f\t\t\tTTC Price: %.2f\n",pro[j].name,pro[j].price,pro[j].price*1.15);
+        printf("\n\tName: %s\t\t\tPrice: %.2f\t\t\tTTC Price: %.2f",pro[j].name,pro[j].price,pro[j].price*1.15);
     }
     switch (op)
     {
@@ -199,9 +175,9 @@ void List(){
                 }
             }
         }
-        printf("\n\n");
+        printf("\n\n\tAfter:");
         for (j=0;j<i;j++){
-        printf("Name: %s\t\t\tPrice: %.2f\t\t\tTTC Price: %.2f\n",pro[j].name,pro[j].price,pro[j].price*1.15);
+        printf("\n\tName: %s\t\t\tPrice: %.2f\t\t\tTTC Price: %.2f",pro[j].name,pro[j].price,pro[j].price*1.15);
         }
         break;
     case 2:
@@ -214,59 +190,60 @@ void List(){
                 }
             }
         }
-        printf("\n\n");
+        printf("\n\n\tAfter:");
         for (j=0;j<i;j++){
-        printf("Name: %s\t\t\tPrice: %.2f\t\t\tTTC Price: %.2f\n",pro[j].name,pro[j].price,pro[j].price*1.15);
+        printf("\n\tName: %s\t\t\tPrice: %.2f\t\t\tTTC Price: %.2f",pro[j].name,pro[j].price,pro[j].price*1.15);
         }
         break;
     default: goto NO1;
         break;
     }
-    printf("\tEnter a capital B to return to the main menu\t\t");
-    scanf("%s",&B);
-    while(B != 'B'){
-        printf("\033[0;33m"); //Yellow Color
-  	    printf("\tPlease enter a capital B to return to the main menu:\t");
-  		scanf("%s",&B);
-	}
-    system("cls");
-    printf("\033[0;37m"); //White color
-    main();
-
+    printf("\n\n\tType a capital Y if you want to list products again:\t");
+    scanf("%s",&Y);
+    if (Y == 'Y') goto NO1;
+    else return_menu();
 }
-
-
 
 //Buy a product Function:
 void Buy(){
-char B; //B for back
-char nameCompare[20];
-int nb; //number of items to buy 
-
+    char nameCompare[20];
+    int nb; //number of items to buy 
     printf("\033[1;36m"); //Cyan Color
     printf("\n\t||-----------------------------|| Buying a product ||-----------------------------||\n\n");
     NO:
+    printf("\033[1;36m"); //Cyan Color
+    for (j=0;j<i;j++){
+        printf("\n\tName: %s\t\t\tQuantity: %d\t\t\tTTC Price: %.2f",pro[j].name,pro[j].quantity,pro[j].price*1.15);
+        }
     printf("\n\tEnter the name of the product you want to buy:\t");
   	scanf("%s",nameCompare);
     make_toupper(nameCompare);
     int c=0; //check if there is a product
     for (j=0;j<i;j++){
         if (strcmp(pro[j].name,nameCompare)==0){
+            NO2:
             printf("\n\tEnter how many item you want to buy:\t");
             scanf("%d",&nb);
+            if(nb>pro[j].quantity){
+                printf("\n\tThere are just %d items left of this product",pro[j].quantity);
+                goto NO2;
+            }
+            if (nb<0) {
+                printf("\n\tYou cannot enter a negative number");
+                goto NO2;
+            }
             printf("\n\tQuantity before buying: ");
-            printf("\n\tName: %s\t\t\tQuantity: %d\n",pro[j].name,pro[j].quantity);
+            printf("\n\tName: %s\t\t\tTTC Price: %.2f\t\t\tQuantity: %d\n",pro[j].name,pro[j].price*1.15,pro[j].quantity);
             pro[j].quantity=pro[j].quantity-nb;
-            /*
-            S[s].name=pro[j].name;
-            S[s].code=pro[j].code;
+            strcpy(S[s].name,pro[j].name);
+            strcpy(S[s].code,pro[j].code);
             S[s].quan=nb;
             S[s].UTTCprice=pro[j].price*1.15;
             S[s].TTTCprice=pro[j].price*1.15*nb;
             time_t t = time(NULL);
-            S[s].date=ctime(&t);
+            strcpy(S[s].date,ctime(&t));
             s++;
-            */
+            snb += nb;
             c++;
             break;
         }
@@ -275,29 +252,27 @@ int nb; //number of items to buy
         printf("\n\tThere is no such product");
         goto NO;
     }
-    printf("\n\n\tQuantity after buying: ");
-    printf("\n\tName: %s\t\t\tQuantity: %d\n",pro[j].name,pro[j].quantity);
-  
-    printf("\tEnter a capital B to return to the main menu\t\t");
+    printf("\n\tQuantity after buying: ");
+    printf("\n\tName: %s\t\t\tTTC Price: %.2f\t\t\tQuantity: %d\n",pro[j].name,pro[j].price*1.15,pro[j].quantity);
+    sleep(1);
+    printf("\n\n\tEnter a capital Y to buy again, or a capital B to return to the main menu:\t\t");
     scanf("%s",&B);
-    while(B != 'B'){
+    while((B != 'B') && (B != 'Y')){
         printf("\033[0;33m"); //Yellow Color
-  	    printf("\tPlease enter a capital B to return to the main menu:\t");
+  	    printf("\tPlease enter a capital A to buy again, or a capital B to return to the main menu:\t");
   		scanf("%s",&B);
 	}
-    system("cls");
-    printf("\033[0;37m"); //White color
-    main();
-    
+    if (B == 'Y') goto NO;
+    else{
+        system("cls");
+        printf("\033[0;37m"); //White color
+        main();
+    }
 }
-
-
 
 //Products search Function:
 void Search(){
-    int op; //op for option.
     char codeCompare[20];
-    char B; //B for back
     int q; //q for quantity
     printf("\033[1;36m"); //Cyan Color
     printf("\n\t||-----------------------------|| Searching... ||-----------------------------||\n\n");
@@ -322,7 +297,7 @@ void Search(){
             make_toupper(codeCompare);
             for (j=0;j<i;j++){
                 if (strcmp(pro[j].code,codeCompare)==0){
-                    printf("Code: %s\t\t\tName: %s\t\t\tQuantity: %d\t\t\tTTC Price: %.2f\n",pro[j].code,pro[j].name,pro[j].quantity,pro[j].price*1.15);
+                    printf("\tCode: %s\t\t\tName: %s\t\t\tQuantity: %d\t\t\tTTC Price: %.2f\n",pro[j].code,pro[j].name,pro[j].quantity,pro[j].price*1.15);
                     count++;
                     break;
                 }
@@ -331,18 +306,12 @@ void Search(){
                 printf("\n\tThere is no such product");
                 goto NO1;
             }
-            else{
-                printf("\tEnter a capital B to return to the main menu\t\t");
-                scanf("%s",&B);
-                while(B != 'B'){
-                    printf("\033[0;33m"); //Yellow Color
-  	                printf("\tPlease enter a capital B to return to the main menu:\t");
-  		            scanf("%s",&B);
-	            }
-                    system("cls");
-                    printf("\033[0;37m"); //White color
-                    main();
-            }
+            else {
+                printf("\n\n\tType a capital Y if you want to search again:\t");
+                scanf("%s",&Y);
+                if (Y == 'Y') goto NO1;
+                else return_menu();
+            };
         break;
 
         case 2:
@@ -350,7 +319,7 @@ void Search(){
   	        scanf("%d",&q);
             for (j=0;j<i;j++){
                 if (q==pro[j].quantity){
-                    printf("Code: %s\t\t\tName: %s\t\t\tQuantity: %d\t\t\tTTC Price: %.2f\n",pro[j].code,pro[j].name,pro[j].quantity,pro[j].price*1.15);
+                    printf("\tCode: %s\t\t\tName: %s\t\t\tQuantity: %d\t\t\tTTC Price: %.2f\n",pro[j].code,pro[j].name,pro[j].quantity,pro[j].price*1.15);
                     count++;
                 }
             }
@@ -358,25 +327,19 @@ void Search(){
                 printf("\n\tThere is no such product with this quantity");
                 goto NO1;
             }
-            else{
-                printf("\tEnter a capital B to return to the main menu\t\t");
-                scanf("%s",&B);
-                while(B != 'B'){
-                    printf("\033[0;33m"); //Yellow Color
-  	                printf("\tPlease enter a capital B to return to the main menu:\t");
-  		            scanf("%s",&B);
-	            }
-                    system("cls");
-                    printf("\033[0;37m"); //White color
-                    main();
-            }
+            else {
+                printf("\n\n\tType a capital Y if you want to search again:\t");
+                scanf("%s",&Y);
+                if (Y == 'Y') goto NO1;
+                else return_menu();
+            };
         break;
 
         case 3:
             for (j=0;j<i;j++){
                 if (pro[j].quantity<3){
-                    printf("Stock status:\n");
-                    printf("Code: %s\t\t\tName: %s\t\t\tQuantity: %d\t\t\tTTC Price: %.2f\n",pro[j].code,pro[j].name,pro[j].quantity,pro[j].price*1.15);
+                    printf("\tStock status:\n");
+                    printf("\tCode: %s\t\t\tName: %s\t\t\tQuantity: %d\t\t\tTTC Price: %.2f\n",pro[j].code,pro[j].name,pro[j].quantity,pro[j].price*1.15);
                     count++;
                 }
             }
@@ -384,18 +347,12 @@ void Search(){
                 printf("\n\tThere is no product with a quantity less than 3\n\n");
                 goto NO1;
             }
-            else{
-                printf("\tEnter a capital B to return to the main menu\t\t");
-                scanf("%s",&B);
-                while(B != 'B'){
-                    printf("\033[0;33m"); //Yellow Color
-  	                printf("\tPlease enter a capital B to return to the main menu:\t");
-  		            scanf("%s",&B);
-	            }
-                    system("cls");
-                    printf("\033[0;37m"); //White color
-                    main();
-            }
+            else {
+                printf("\n\n\tType a capital Y if you want to search again:\t");
+                scanf("%s",&Y);
+                if (Y == 'Y') goto NO1;
+                else return_menu();
+            };
         break;
 
         default: goto NO1;
@@ -404,16 +361,15 @@ void Search(){
 
 }
 
-
-
 //Replenish stock Function:
 void Replenish(){
-    char B; //B for back
     char codeCompare[20];
     int q; //q for the quantity
-
     printf("\033[1;36m"); //Cyan Color
     printf("\n\t||-----------------------------|| Replenish/Supplying ||-----------------------------||\n\n");
+    for (j=0;j<i;j++){
+        printf("\n\tName: %s\t\t\tCode: %s\t\t\tQuantity: %d",pro[j].name,pro[j].code,pro[j].quantity);
+    }
     NO:
     printf("\n\tEnter the code of the product:\t");
   	scanf("%s",codeCompare);
@@ -421,8 +377,13 @@ void Replenish(){
     int c=0; //check if there is a product
     for (j=0;j<i;j++){
         if (strcmp(pro[j].code,codeCompare)==0){
+            NO1:
             printf("\n\tEnter the quantity please:\t");
             scanf("%d",&q);
+            if (q<0){
+                printf("\n\tYou cannot enter a negative number");
+                goto NO1;
+            }
             printf("\n\tQuantity before supplying: ");
             printf("\n\tName: %s\t\t\tQuantity: %d\n",pro[j].name,pro[j].quantity);
             pro[j].quantity=pro[j].quantity+q;
@@ -432,24 +393,20 @@ void Replenish(){
     }
     if (c==0) {
         printf("\n\tThere is no such product");
-        goto NO;
+        NO2:
+        printf("\n\tTo reenter a correct code enter Y, to return to the menu enter B:\t");
+        scanf("%s",&Y);
+        if (Y == 'B') return_menu();
+        else if (Y == 'Y') goto NO;
+        else goto NO2;
     }
     printf("\n\n\tQuantity after suppling: ");
     printf("\n\tName: %s\t\t\tQuantity: %d\n",pro[j].name,pro[j].quantity);
-    printf("\tEnter a capital B to return to the main menu\t\t");
-    scanf("%s",&B);
-    while(B != 'B'){
-        printf("\033[0;33m"); //Yellow Color
-  	    printf("\tPlease enter a capital B to return to the main menu:\t");
-  		scanf("%s",&B);
-	}
-    system("cls");
-    printf("\033[0;37m"); //White color
-    main();
-    
+    printf("\n\n\tType a capital Y if you want to replenish again:\t");
+    scanf("%s",&Y);
+    if (Y == 'Y') goto NO;
+    else return_menu();
 }
-
-
 
 //Delete products Function:
 void Delete(){
@@ -459,6 +416,9 @@ void Delete(){
     printf("\033[1;36m"); //Cyan Color
     printf("\n\t||-----------------------|| Delete a product ||-----------------------||\n\n");
     sleep(1);
+    for (j=0;j<i;j++){
+        printf("\n\tName: %s\t\t\tCode: %s",pro[j].name,pro[j].code);
+    }
     NO:
     printf("\n\tPlease Enter your product code:\t");
     scanf("%s",codeCompare);
@@ -471,6 +431,12 @@ void Delete(){
     }
     if (c==0) {
         printf("\n\tThere is no such product");
+        NO2:
+        printf("\n\tTo reenter a correct code enter Y, to return to the menu enter B:\t");
+        scanf("%s",&Y);
+        if (Y == 'B') return_menu();     
+        else if (Y == 'Y') goto NO;   
+        else goto NO2;
         goto NO;
     }
     else{
@@ -479,28 +445,66 @@ void Delete(){
         }
         i--;
     }
+    printf("\n\tProduct deleted\n");
+    sleep(1);
+    printf("\n\n\tType a capital Y if you want to search again:\t");
+    scanf("%s",&Y);
+    if (Y == 'Y') goto NO;
+    else return_menu();
 }
-
-
 
 //Sales statistics Function:
 void Statistics(){
-    int TTTC=0;
-    int m;
-    for (j=0;j<i;j++){
-        TTTC+=S[j].TTTCprice;
+    float total=0;
+    int k;
+    struct Save temp;
+    
+    printf("\033[1;36m"); //Cyan Color
+    printf("\n\t||-----------------------|| Sales statistics ||-----------------------||\n\n");
+    sleep(1);
+    
+    printf("\n\tProducts sold: \n");
+    for(j=0;j<s;j++){
+        printf("\n\tDate:%.24s",S[j].date);
+        printf("\n\tName:%s\t\t\tCode:%s\t\t\tNb of Items:%d\t\t\tTTC Price:%.2f\n",S[j].name,S[j].code,S[j].quan,S[j].TTTCprice);
     }
-    for (j=0;j<i;j++){
-        m=TTTC
+    
+    for (j=0;j<s;j++){
+        total+=S[j].TTTCprice;
     }
+    printf("\n\n\tThe total price of the products sold:\t%.2f",total);
+    printf("\n\n\tthe average price of the products sold:\t%.2f",total/snb);
+
+    for (j=0;j<s-1;j++){
+            for(k=j+1;k<s;k++){
+                if(S[j].UTTCprice > S[k].UTTCprice){
+                    temp=S[j];
+                    S[j]=S[k];
+                    S[k]=temp;
+                }
+            }
+        }
+    // for (j=0;j<s-1;j++){
+    //     for(k=j+1;k<s;k++){
+    //         if(S[j].TTTCprice > S[k].TTTCprice){
+    //             temp=S[j];
+    //             S[j]=S[k];
+    //             S[k]=temp;
+    //         }
+    //     }
+    // }    
+    printf("\n\n\tThe Min of the prices of the products sold is:");
+    printf("\n\tName: %s\t\tUnit TTC Price: %.2f",S[0].name,S[0].UTTCprice);
+    printf("\n\n\tThe Max of the prices of the products sold is:");
+    printf("\n\tName: %s\t\tUnit TTC Price: %.2f\n",S[s-1].name,S[s-1].UTTCprice);
+    sleep(1);
+    return_menu();
 }
-
-
 
 //The main function
 int main () {
-    int op; //op for option.
     printf("\n\t||-----------------------------|| Hello & Welcome ||-----------------------------||\n\n");
+    NO:
     sleep(1);
     printf("\n\t\t\t-> Add a new product                    .1.\n");
     usleep(30000);
@@ -518,7 +522,9 @@ int main () {
     usleep(30000);
     printf("\n\t\t\t-> Sales statistics                     .8.\n");
     usleep(30000);
-    printf("\n\t\t\t-> Choose an option:\t\t");
+    printf("\n\t\t\t-> Exit the app                         .9.\n");
+    usleep(30000);
+    printf("\n\n\t\t\t-> Choose an option:\t\t");
     scanf("%d",&op);
     system("cls");
     switch (op)
@@ -547,7 +553,10 @@ int main () {
     case 8:
         Statistics();
         break;
-    default:
+    case 9: exit(0);
+        break;
+    default: printf("\n\tPlease enter a number between 1 & 9:\t\n\n");
+             goto NO;
         break;
     }
     system("cls");

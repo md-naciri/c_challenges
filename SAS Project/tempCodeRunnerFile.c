@@ -1,2 +1,1 @@
-time_t t = time(NULL);
-// ctime(t);
+#include<conio.h>
